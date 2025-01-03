@@ -71,14 +71,14 @@ async def selenium_task(message, username, password):
         try:
             # Open the website
             driver.get("http://pulchowk.elibrary.edu.np/")
-            time.sleep(5)
+            time.sleep(1)
 
             # Click the "Sign In" button
             signin_button = driver.find_element(
                 By.XPATH, "//span[contains(text(), 'Sign In')]"
             )
             signin_button.click()
-            time.sleep(5)
+            time.sleep(1)
 
             # Enter username and password
             driver.find_element(By.ID, "Username").send_keys(username)
@@ -86,18 +86,18 @@ async def selenium_task(message, username, password):
 
             # Submit login form
             driver.find_element(By.ID, "btnSubmit").click()
-            time.sleep(5)
+            time.sleep(1)
 
             roll_number_element = driver.find_element(
                 By.XPATH, f"//span[contains(text(), '{username}')]"
             )
             roll_number_element.click()
 
-            time.sleep(5)
+            time.sleep(1)
 
             profile_link = driver.find_element(By.ID, "userProfile")
             profile_link.click()
-            time.sleep(5)
+            time.sleep(1)
 
             table = driver.find_element(By.CLASS_NAME, "table-striped")
             rows = table.find_elements(By.TAG_NAME, "tr")
