@@ -52,44 +52,65 @@ async def on_message(message):
 
 async def selenium_task(message, username, password):
     def run_selenium():
+        # Set up Chrome WebDriver with options
         options = Options()
-        options.add_argument("--headless=new")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-gpu")
-        options.add_argument("--remote-debugging-port=9222")
-        options.add_argument("--disable-extensions")
-        options.add_argument("--disable-popup-blocking")
-        options.add_argument("--disable-infobars")
+        options.add_argument("--headless")  # Run in headless mode
+        options.add_argument("--disable-dev-shm-usage")  # Disable shared memory usage
+        options.add_argument("--no-sandbox")  # Disable sandbox for Docker
+        options.add_argument("--disable-gpu")  # Disable GPU acceleration
+        options.add_argument("--remote-debugging-port=9222")  # Enable remote debugging
+
+        # Explicitly set Chrome binary path
         options.binary_location = "/usr/bin/google-chrome"
 
-        prefs = {"profile.managed_default_content_settings.images": 2}
-        options.add_experimental_option("prefs", prefs)
-
-        service = Service(ChromeDriverManager().install())
+        # Use webdriver_manager to install and manage ChromeDriver
+        chromedriver_path = ChromeDriverManager().install()
+        service = Service(chromedriver_path)
         driver = webdriver.Chrome(service=service, options=options)
 
         try:
+            # Open the website
             driver.get("http://pulchowk.elibrary.edu.np/")
-            WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//span[contains(text(), 'Sign In')]"))
-            ).click()
+            time.sleep(1)
 
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "Username"))
-            ).send_keys(username)
+            # Click the "Sign In" button
+            signin_button = driver.find_element(
+                By.XPATH, "//span[contains(text(), 'Sign In')]"
+            )
+            signin_button.click()
+            time.sleep(1)
+
+            # Enter username and password
+            driver.find_element(By.ID, "Username").send_keys(username)
             driver.find_element(By.ID, "Password").send_keys(password)
+
+            # Submit login form
             driver.find_element(By.ID, "btnSubmit").click()
+            time.sleep(1)
 
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, "userProfile"))
-            ).click()
+            roll_number_element = driver.find_element(
+                By.XPATH, f"//span[contains(text(), '{username}')]"
+            )
+            roll_number_element.click()
 
-            table_data = [
-                [cell.text for cell in row.find_elements(By.TAG_NAME, "td")[:-1]]
-                for row in driver.find_elements(By.XPATH, "//table[@class='table-striped']/tr")
-            ]
+            time.sleep(1)
+
+            profile_link = driver.find_element(By.ID, "userProfile")
+            profile_link.click()
+            time.sleep(1)
+
+            table = driver.find_element(By.CLASS_NAME, "table-striped")
+            rows = table.find_elements(By.TAG_NAME, "tr")
+
+            table_data = []
+            for row in rows:
+                cells = row.find_elements(By.TAG_NAME, "td")
+                row_data = [cell.text for cell in cells[:-1]]
+                if row_data:
+                    table_data.append(row_data)
+
             return table_data
+
         except Exception as e:
             return f"Error: {str(e)}"
         finally:
@@ -120,7 +141,6 @@ async def selenium_task(message, username, password):
         await message.channel.send(
             f"An error occurred while processing the data: {str(e)}"
         )
-
 
 token = os.getenv("BOT_TOKEN")
 client.run(token)
