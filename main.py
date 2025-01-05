@@ -81,7 +81,7 @@ async def selenium_task(message, username, password):
 
             # Enter username and password
             WebDriverWait(driver, 10).until(
-                EC.presence_of_all_element_located((By.ID,"Username"))
+                EC.presence_of_element_located((By.ID,"Username"))
             ).send_keys(username)
             driver.find_element(By.ID, "Password").send_keys(password)
 
@@ -90,7 +90,7 @@ async def selenium_task(message, username, password):
             
 
             WebDriverWait(driver, 10).until(
-                EC.presence_of_all_element_located((By.XPATH,f"//span[contains(text(), '{username}')]"))
+                EC.presence_of_element_located((By.XPATH,f"//span[contains(text(), '{username}')]"))
             ).click()
             
 
