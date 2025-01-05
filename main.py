@@ -64,7 +64,7 @@ async def selenium_task(message, username, password):
         options.binary_location = "/usr/bin/google-chrome"
 
         # Use webdriver_manager to install and manage ChromeDriver
-        chromedriver_path = ChromeDriverManager().install()
+        chromedriver_path = ChromeDriverManager(version="131.0.6778.204").install()
         service = Service(chromedriver_path)
         driver = webdriver.Chrome(service=service, options=options)
 
