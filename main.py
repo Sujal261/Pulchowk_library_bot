@@ -75,7 +75,7 @@ async def selenium_task(message, username, password):
 
             # Click the "Sign In" button
             WebDriverWait(driver, 10).until(
-                EC.presence_of_all_element_located((By.XPATH,"//span[contains(text(), 'Sign In')]"))
+                EC.presence_of_element_located((By.XPATH,"//span[contains(text(), 'Sign In')]"))
             ).click()
             
 
